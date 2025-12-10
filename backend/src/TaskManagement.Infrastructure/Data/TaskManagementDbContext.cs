@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Domain.Entities;
-using TaskManagement.Domain.Enums;
+using DomainTask = TaskManagement.Domain.Entities.Task;
+using DomainTaskStatus = TaskManagement.Domain.Enums.TaskStatus;
 
 namespace TaskManagement.Infrastructure.Data;
 
@@ -11,10 +12,12 @@ public class TaskManagementDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<Domain.Entities.Task> Tasks { get; set; }
+    public DbSet<DomainTask> Tasks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -24,7 +27,7 @@ public class TaskManagementDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
         });
 
-        modelBuilder.Entity<Domain.Entities.Task>(entity =>
+        modelBuilder.Entity<DomainTask>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).HasMaxLength(255).IsRequired();
@@ -39,7 +42,5 @@ public class TaskManagementDbContext : DbContext
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
-
-        base.OnModelCreating(modelBuilder);
     }
 }
