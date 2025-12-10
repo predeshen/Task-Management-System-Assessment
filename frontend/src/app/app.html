@@ -8,5 +8,13 @@
   </main>
 </div>
 
+<!-- Global Confirmation Dialog -->
+<app-confirmation-dialog
+  [isVisible]="dialogState.isVisible"
+  [data]="dialogState.data!"
+  (confirmed)="onDialogConfirm()"
+  (cancelled)="onDialogCancel()"
+></app-confirmation-dialog>
 
-<router-outlet />
+<!-- Global Toast Notifications -->
+<app-toast-notifications></app-toast-notifications>

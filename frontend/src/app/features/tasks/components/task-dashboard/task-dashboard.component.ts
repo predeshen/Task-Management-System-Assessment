@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil, combineLatest, map, startWith } from 'rxjs';
 
 import { TaskStateService } from '../../../../core/services/task-state.service';
+import { ConfirmationDialogService } from '../../../../core/services/confirmation-dialog.service';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { Task, TaskStatus, TaskFilter, TaskSortOptions } from '../../../../core/models/task.model';
@@ -493,6 +494,7 @@ export class TaskDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private taskStateService: TaskStateService,
+    private confirmationDialogService: ConfirmationDialogService,
     private router: Router
   ) {
     this.filterForm = this.createFilterForm();
@@ -614,8 +616,10 @@ export class TaskDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteTask(task: Task): void {
-    if (confirm(TASK_CONSTANTS.MESSAGES.DELETE_CONFIRM)) {
+  async deleteTask(task: Task): Promise<void> {
+    const confirmed = await this.confirmationDialogService.confirmDeletion(task.title, 'task');
+    
+    if (confirmed) {
       this.taskStateService.deleteTask(task.id).subscribe();
     }
   }
