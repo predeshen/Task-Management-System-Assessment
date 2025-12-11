@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Net;
 using System.Text.Json;
 using TaskManagement.Api.Middleware;
+using TaskManagement.Api.Models;
 
 namespace TaskManagement.Api.Tests.Middleware;
 
@@ -69,9 +70,10 @@ public class GlobalExceptionHandlingMiddlewareTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(400));
-        Assert.That(errorResponse.Message, Is.EqualTo("Invalid request parameters"));
-        Assert.That(errorResponse.Details, Is.EqualTo(exceptionMessage));
+        Assert.That(_context.Response.StatusCode, Is.EqualTo(400));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Invalid request parameters"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo(exceptionMessage));
     }
 
     [Test]
@@ -100,9 +102,10 @@ public class GlobalExceptionHandlingMiddlewareTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(401));
-        Assert.That(errorResponse.Message, Is.EqualTo("Unauthorized access"));
-        Assert.That(errorResponse.Details, Is.EqualTo(exceptionMessage));
+        Assert.That(_context.Response.StatusCode, Is.EqualTo(401));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Unauthorized access"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo(exceptionMessage));
     }
 
     [Test]
@@ -131,9 +134,10 @@ public class GlobalExceptionHandlingMiddlewareTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(404));
-        Assert.That(errorResponse.Message, Is.EqualTo("Resource not found"));
-        Assert.That(errorResponse.Details, Is.EqualTo(exceptionMessage));
+        Assert.That(_context.Response.StatusCode, Is.EqualTo(404));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Resource not found"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo(exceptionMessage));
     }
 
     [Test]
@@ -162,9 +166,10 @@ public class GlobalExceptionHandlingMiddlewareTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(400));
-        Assert.That(errorResponse.Message, Is.EqualTo("Invalid operation"));
-        Assert.That(errorResponse.Details, Is.EqualTo(exceptionMessage));
+        Assert.That(_context.Response.StatusCode, Is.EqualTo(400));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Invalid operation"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo(exceptionMessage));
     }
 
     [Test]
@@ -193,9 +198,10 @@ public class GlobalExceptionHandlingMiddlewareTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(500));
-        Assert.That(errorResponse.Message, Is.EqualTo("An internal server error occurred"));
-        Assert.That(errorResponse.Details, Is.EqualTo("Please contact support if the problem persists"));
+        Assert.That(_context.Response.StatusCode, Is.EqualTo(500));
+        Assert.That(errorResponse!.Message, Is.EqualTo("An internal server error occurred"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("Please contact support if the problem persists"));
     }
 
     [Test]

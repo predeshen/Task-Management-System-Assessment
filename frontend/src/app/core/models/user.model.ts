@@ -1,9 +1,9 @@
 export interface User {
   id: number;
   username: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  email?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface LoginRequest {

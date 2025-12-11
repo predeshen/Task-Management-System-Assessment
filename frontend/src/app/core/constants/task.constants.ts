@@ -13,19 +13,19 @@ export const TASK_CONSTANTS = {
   },
   
   STATUS_LABELS: {
-    [TaskStatus.Pending]: 'Pending',
+    [TaskStatus.ToDo]: 'To Do',
     [TaskStatus.InProgress]: 'In Progress',
     [TaskStatus.Completed]: 'Completed'
   },
   
   STATUS_COLORS: {
-    [TaskStatus.Pending]: '#ffc107',
+    [TaskStatus.ToDo]: '#ffc107',
     [TaskStatus.InProgress]: '#007bff',
     [TaskStatus.Completed]: '#28a745'
   },
   
   STATUS_ICONS: {
-    [TaskStatus.Pending]: '⏳',
+    [TaskStatus.ToDo]: '⏳',
     [TaskStatus.InProgress]: '🔄',
     [TaskStatus.Completed]: '✅'
   },
@@ -54,7 +54,7 @@ export const TASK_CONSTANTS = {
   
   FILTER_OPTIONS: [
     { value: undefined, label: 'All Tasks' },
-    { value: TaskStatus.Pending, label: 'Pending' },
+    { value: TaskStatus.ToDo, label: 'To Do' },
     { value: TaskStatus.InProgress, label: 'In Progress' },
     { value: TaskStatus.Completed, label: 'Completed' }
   ] as const

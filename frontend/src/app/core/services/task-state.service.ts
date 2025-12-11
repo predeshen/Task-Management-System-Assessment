@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, catchError, of, tap, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, map, catchError, of, tap, finalize, timeout } from 'rxjs';
 import { 
   Task, 
   TaskState, 
@@ -34,11 +34,19 @@ export class TaskStateService {
   constructor(private taskService: TaskService) {}
 
   loadTasks(): Observable<boolean> {
-    this.setLoading(true);
-    this.clearError();
+    console.log('TaskStateService: Starting to load tasks');
+    
+    // Ensure we start with a clean state
+    this.updateState({
+      ...this.getCurrentState(),
+      isLoading: true,
+      error: null
+    });
 
     return this.taskService.getTasks().pipe(
+      timeout(30000), // 30 second timeout
       tap((tasks: Task[]) => {
+        console.log('TaskStateService: Tasks loaded successfully', tasks);
         this.updateState({
           ...this.getCurrentState(),
           tasks,
@@ -48,12 +56,20 @@ export class TaskStateService {
       }),
       map(() => true),
       catchError((error) => {
+        console.error('TaskStateService: Error loading tasks', error);
+        const errorMessage = error.name === 'TimeoutError' 
+          ? 'Request timed out. Please check your connection and try again.'
+          : this.getErrorMessage(error);
+        
         this.updateState({
           ...this.getCurrentState(),
           isLoading: false,
-          error: this.getErrorMessage(error)
+          error: errorMessage
         });
         return of(false);
+      }),
+      finalize(() => {
+        console.log('TaskStateService: Load tasks operation completed');
       })
     );
   }
@@ -118,11 +134,13 @@ export class TaskStateService {
   }
 
   deleteTask(taskId: number): Observable<TaskOperationResult> {
+    console.log('TaskStateService: Starting delete for task', taskId);
     this.setLoading(true);
     this.clearError();
 
     return this.taskService.deleteTask(taskId).pipe(
       tap(() => {
+        console.log('TaskStateService: Delete successful, updating state');
         const currentState = this.getCurrentState();
         const updatedTasks = currentState.tasks.filter(task => task.id !== taskId);
         
@@ -133,9 +151,11 @@ export class TaskStateService {
           isLoading: false,
           error: null
         });
+        console.log('TaskStateService: State updated after delete');
       }),
       map(() => ({ success: true })),
       catchError((error) => {
+        console.error('TaskStateService: Delete failed', error);
         const errorMessage = this.getErrorMessage(error);
         this.updateState({
           ...this.getCurrentState(),
@@ -143,6 +163,10 @@ export class TaskStateService {
           error: errorMessage
         });
         return of({ success: false, error: errorMessage });
+      }),
+      finalize(() => {
+        console.log('TaskStateService: Delete operation completed');
+        this.setLoading(false);
       })
     );
   }

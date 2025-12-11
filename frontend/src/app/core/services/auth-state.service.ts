@@ -72,11 +72,13 @@ export class AuthStateService {
   }
 
   login(credentials: LoginRequest): Observable<boolean> {
+    console.log('AuthStateService: Starting login process', credentials.username);
     this.setLoading(true);
     this.clearError();
 
     return this.authService.login(credentials).pipe(
       tap((response: AuthResponse) => {
+        console.log('AuthStateService: Login response received', response);
         this.authService.setAuthData(response);
         this.updateState({
           user: response.user,
@@ -84,9 +86,11 @@ export class AuthStateService {
           isLoading: false,
           error: null
         });
+        console.log('AuthStateService: State updated, user authenticated');
       }),
       map(() => true),
       catchError((error) => {
+        console.error('AuthStateService: Login error', error);
         const errorMessage = this.getErrorMessage(error);
         this.updateState({
           ...this.getCurrentState(),

@@ -75,18 +75,26 @@ export class AuthService {
   setAuthData(authResponse: AuthResponse): void {
     if (!isPlatformBrowser(this.platformId)) return;
     
+    console.log('AuthService: Setting auth data', authResponse);
+    
     // Convert string date to Date object if needed
     const expiresAt = typeof authResponse.expiresAt === 'string' 
       ? new Date(authResponse.expiresAt) 
       : authResponse.expiresAt;
 
+    console.log('AuthService: Expires at', expiresAt);
+
     localStorage.setItem(AUTH_CONSTANTS.STORAGE_KEYS.TOKEN, authResponse.token);
     localStorage.setItem(AUTH_CONSTANTS.STORAGE_KEYS.USER, JSON.stringify(authResponse.user));
     localStorage.setItem(AUTH_CONSTANTS.STORAGE_KEYS.EXPIRES_AT, expiresAt.toISOString());
     
+    console.log('AuthService: Data stored in localStorage');
+    
     this.currentUserSubject.next(authResponse.user);
     this.isAuthenticatedSubject.next(true);
     this.scheduleTokenExpiration();
+    
+    console.log('AuthService: Auth state updated, isAuthenticated:', true);
   }
 
   logout(): void {
@@ -122,11 +130,11 @@ export class AuthService {
     
     try {
       const user = JSON.parse(userJson);
-      // Convert date strings back to Date objects
+      // Convert date strings back to Date objects if they exist
       return {
         ...user,
-        createdAt: new Date(user.createdAt),
-        updatedAt: new Date(user.updatedAt)
+        createdAt: user.createdAt ? new Date(user.createdAt) : undefined,
+        updatedAt: user.updatedAt ? new Date(user.updatedAt) : undefined
       };
     } catch (error) {
       console.error('Error parsing stored user data:', error);

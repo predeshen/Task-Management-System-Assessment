@@ -1,0 +1,28 @@
+<div class="toast-container">
+  <div 
+    *ngFor="let error of errors; trackBy: trackByErrorId"
+    class="toast"
+    [class]="getToastClass(error)"
+    [class.dismissed]="error.dismissed"
+    role="alert"
+    [attr.aria-live]="error.type === 'error' ? 'assertive' : 'polite'"
+  >
+    <div class="toast-icon">
+      {{ getIcon(error.type) }}
+    </div>
+    
+    <div class="toast-content">
+      <div class="toast-message">{{ error.message }}</div>
+      <div class="toast-timestamp">{{ formatTimestamp(error.timestamp) }}</div>
+    </div>
+    
+    <button 
+      class="toast-close"
+      (click)="dismissError(error.id)"
+      [attr.aria-label]="'Dismiss ' + error.type + ' message'"
+      type="button"
+    >
+      ×
+    </button>
+  </div>
+</div>

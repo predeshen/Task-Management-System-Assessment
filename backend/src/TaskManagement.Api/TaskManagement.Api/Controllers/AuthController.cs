@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using TaskManagement.Api.Models;
 using TaskManagement.Application.Interfaces;
+using TaskManagement.Application.Models;
 
 namespace TaskManagement.Api.Controllers;
 
@@ -10,11 +12,13 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger, IOptions<JwtSettings> jwtSettings)
     {
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _jwtSettings = jwtSettings?.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
     }
 
     /// <summary>
@@ -76,7 +80,8 @@ public class AuthController : ControllerBase
                 {
                     Id = result.User!.Id,
                     Username = result.User.Username
-                }
+                },
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes)
             };
 
             _logger.LogInformation("User {Username} logged in successfully", request.Username);

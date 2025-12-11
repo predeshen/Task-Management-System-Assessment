@@ -13,8 +13,15 @@ export class TaskService {
   constructor(private apiService: ApiService) {}
 
   getTasks(): Observable<Task[]> {
-    return this.apiService.get<Task[]>(this.endpoint).pipe(
-      map(tasks => tasks.map(task => this.mapTaskDates(task)))
+    console.log('TaskService: Getting tasks from', this.endpoint);
+    return this.apiService.get<any>(this.endpoint).pipe(
+      map(response => {
+        console.log('TaskService: Received response from API', response);
+        // Handle both array response and object with value property
+        const tasks = Array.isArray(response) ? response : (response.value || []);
+        console.log('TaskService: Extracted tasks', tasks);
+        return tasks.map((task: any) => this.mapTaskDates(task));
+      })
     );
   }
 
@@ -37,7 +44,13 @@ export class TaskService {
   }
 
   deleteTask(id: number): Observable<void> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+    console.log('TaskService: Deleting task', id);
+    return this.apiService.delete<void>(`${this.endpoint}/${id}`).pipe(
+      map(() => {
+        console.log('TaskService: Task deleted successfully', id);
+        return undefined as void;
+      })
+    );
   }
 
   updateTaskStatus(id: number, status: TaskStatus): Observable<Task> {

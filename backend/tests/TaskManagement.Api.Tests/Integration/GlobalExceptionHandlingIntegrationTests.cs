@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Net;
 using System.Text.Json;
 using TaskManagement.Api.Middleware;
+using TaskManagement.Api.Models;
 
 namespace TaskManagement.Api.Tests.Integration;
 
@@ -49,9 +50,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(400));
-        Assert.That(errorResponse.Message, Is.EqualTo("Invalid request parameters"));
-        Assert.That(errorResponse.Details, Is.EqualTo("This is a test argument exception"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Invalid request parameters"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("This is a test argument exception"));
         Assert.That(errorResponse.TraceId, Is.Not.Null.And.Not.Empty);
     }
 
@@ -71,9 +72,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(401));
-        Assert.That(errorResponse.Message, Is.EqualTo("Unauthorized access"));
-        Assert.That(errorResponse.Details, Is.EqualTo("This is a test unauthorized exception"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Unauthorized access"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("This is a test unauthorized exception"));
     }
 
     [Test]
@@ -92,9 +93,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(404));
-        Assert.That(errorResponse.Message, Is.EqualTo("Resource not found"));
-        Assert.That(errorResponse.Details, Is.EqualTo("This is a test not found exception"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Resource not found"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("This is a test not found exception"));
     }
 
     [Test]
@@ -113,9 +114,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(400));
-        Assert.That(errorResponse.Message, Is.EqualTo("Invalid operation"));
-        Assert.That(errorResponse.Details, Is.EqualTo("This is a test invalid operation exception"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Invalid operation"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("This is a test invalid operation exception"));
     }
 
     [Test]
@@ -134,9 +135,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(500));
-        Assert.That(errorResponse.Message, Is.EqualTo("An internal server error occurred"));
-        Assert.That(errorResponse.Details, Is.EqualTo("Please contact support if the problem persists"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("An internal server error occurred"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Is.EqualTo("Please contact support if the problem persists"));
     }
 
     [Test]
@@ -155,9 +156,9 @@ public class GlobalExceptionHandlingIntegrationTests
         });
 
         Assert.That(errorResponse, Is.Not.Null);
-        Assert.That(errorResponse!.StatusCode, Is.EqualTo(400));
-        Assert.That(errorResponse.Message, Is.EqualTo("Invalid request parameters"));
-        Assert.That(errorResponse.Details, Contains.Substring("Invalid exception type"));
+        Assert.That(errorResponse!.Message, Is.EqualTo("Invalid request parameters"));
+        Assert.That(errorResponse.Errors, Is.Not.Empty);
+        Assert.That(errorResponse.Errors.First().Message, Contains.Substring("Invalid exception type"));
     }
 
     [Test]

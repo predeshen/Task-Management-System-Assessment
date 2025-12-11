@@ -20,168 +20,8 @@ import { LoginFormData } from '../../../../core/models/user.model';
     LoadingSpinnerComponent, 
     ErrorMessageComponent
   ],
-  template: `
-    <div class="login-container">
-      <div class="login-card">
-        <h2>Welcome Back</h2>
-        <p class="login-subtitle">Please sign in to your account</p>
-        
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              formControlName="username"
-              class="form-control"
-              [class.error]="isFieldInvalid('username')"
-              placeholder="Enter your username"
-              autocomplete="username"
-            />
-            <div class="error-text" *ngIf="isFieldInvalid('username')">
-              {{ getFieldError('username') }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              formControlName="password"
-              class="form-control"
-              [class.error]="isFieldInvalid('password')"
-              placeholder="Enter your password"
-              autocomplete="current-password"
-            />
-            <div class="error-text" *ngIf="isFieldInvalid('password')">
-              {{ getFieldError('password') }}
-            </div>
-          </div>
-
-          <app-error-message [message]="errorMessage"></app-error-message>
-
-          <button
-            type="submit"
-            class="login-button"
-            [disabled]="loginForm.invalid || isLoading"
-          >
-            <span *ngIf="!isLoading">Sign In</span>
-            <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
-          </button>
-        </form>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 1rem;
-    }
-
-    .login-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 0.5rem;
-      color: #333;
-      font-size: 1.75rem;
-      font-weight: 600;
-    }
-
-    .login-subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
-
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    label {
-      font-weight: 500;
-      color: #333;
-      font-size: 0.9rem;
-    }
-
-    .form-control {
-      padding: 0.75rem;
-      border: 2px solid #e1e5e9;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.2s ease;
-    }
-
-    .form-control:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-control.error {
-      border-color: #e74c3c;
-    }
-
-    .error-text {
-      color: #e74c3c;
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-    }
-
-    .login-button {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 0.875rem;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-    }
-
-    .login-button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    .login-button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 2rem 1.5rem;
-      }
-    }
-  `]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
@@ -262,8 +102,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authStateService.isAuthenticated$
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAuthenticated => {
+        console.log('Authentication state changed:', isAuthenticated);
         if (isAuthenticated) {
-          this.router.navigate([this.returnUrl]);
+          console.log('Navigating to:', this.returnUrl);
+          console.log('Current URL before navigation:', window.location.href);
+          this.router.navigate([this.returnUrl]).then(success => {
+            console.log('Navigation success:', success);
+            console.log('Current URL after navigation:', window.location.href);
+          }).catch(error => {
+            console.error('Navigation error:', error);
+          });
         }
       });
   }

@@ -25,7 +25,10 @@ export class ApiService {
   }
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
+    const url = `${this.baseUrl}${endpoint}`;
+    console.log('ApiService: Making GET request to', url);
+    console.log('ApiService: Headers', this.getHeaders());
+    return this.http.get<T>(url, {
       headers: this.getHeaders()
     });
   }
@@ -43,7 +46,9 @@ export class ApiService {
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
+    const url = `${this.baseUrl}${endpoint}`;
+    console.log('ApiService: Making DELETE request to', url);
+    return this.http.delete<T>(url, {
       headers: this.getHeaders()
     });
   }

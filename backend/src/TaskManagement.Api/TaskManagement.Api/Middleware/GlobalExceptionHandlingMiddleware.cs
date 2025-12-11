@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using TaskManagement.Api.Models;
 
 namespace TaskManagement.Api.Middleware;
 
@@ -41,37 +42,37 @@ public class GlobalExceptionHandlingMiddleware
         {
             case ArgumentNullException:
             case ArgumentException:
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.Message = "Invalid request parameters";
-                response.Details = exception.Message;
+                response.Errors.Add(new ValidationError { Field = "Request", Message = exception.Message });
                 break;
 
             case UnauthorizedAccessException:
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 response.Message = "Unauthorized access";
-                response.Details = exception.Message;
+                response.Errors.Add(new ValidationError { Field = "Authorization", Message = exception.Message });
                 break;
 
             case KeyNotFoundException:
-                response.StatusCode = (int)HttpStatusCode.NotFound;
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 response.Message = "Resource not found";
-                response.Details = exception.Message;
+                response.Errors.Add(new ValidationError { Field = "Resource", Message = exception.Message });
                 break;
 
             case InvalidOperationException:
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.Message = "Invalid operation";
-                response.Details = exception.Message;
+                response.Errors.Add(new ValidationError { Field = "Operation", Message = exception.Message });
                 break;
 
             default:
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Message = "An internal server error occurred";
-                response.Details = "Please contact support if the problem persists";
+                response.Errors.Add(new ValidationError { Field = "Server", Message = "Please contact support if the problem persists" });
                 break;
         }
 
-        context.Response.StatusCode = response.StatusCode;
+        response.TraceId = context.TraceIdentifier;
 
         var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
         {
@@ -82,14 +83,3 @@ public class GlobalExceptionHandlingMiddleware
     }
 }
 
-/// <summary>
-/// Standard error response model for consistent error formatting
-/// </summary>
-public class ErrorResponse
-{
-    public int StatusCode { get; set; }
-    public string Message { get; set; } = string.Empty;
-    public string Details { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    public string TraceId { get; set; } = System.Diagnostics.Activity.Current?.Id ?? Guid.NewGuid().ToString();
-}
